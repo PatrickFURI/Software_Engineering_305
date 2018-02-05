@@ -1,0 +1,3 @@
+run the app by using "npm start" from the command line while in the project folder
+run ipconfig in the terminal and get the IPv4 Address for Wireless LAN adapter Wi-Fi
+make sure that your phone is on the same Wi-Fi and connect to exp://[IPaddress]:19000 through the search bar in the expo app

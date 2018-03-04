@@ -13,9 +13,11 @@ import android.util.Log;
 
 import com.example.android.software_engineering_305.application.BluetoothAction;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
@@ -92,6 +94,9 @@ public class BluetoothService extends Service
                 break;
             case write:
                 write(data);
+                break;
+            case read:
+                listenForData();
                 break;
         }
         return START_REDELIVER_INTENT;
@@ -227,6 +232,13 @@ public class BluetoothService extends Service
         context.startService(intent);
     }
 
+    public static void read(Context context)
+    {
+        Intent intent = new Intent(context, BluetoothService.class);
+        intent.setAction(BluetoothAction.disconnect.toString());
+        context.startService(intent);
+    }
+
     // Doesn't work yet
     private void listenForData()
     {
@@ -235,18 +247,26 @@ public class BluetoothService extends Service
             final byte delimiter = 10;
             int bytesAvailable = serialInputStream.available();
             if (bytesAvailable > 0) {
-                byte[] packetBytes = new byte[bytesAvailable];
-                serialInputStream.read(packetBytes);
-                for (int i = 0; i < bytesAvailable; i++) {
-                    byte b = packetBytes[i];
-                    if (b == delimiter) {
-                        byte[] encodedBytes = new byte[readBufferPosition];
-                        System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                        final String data = new String(encodedBytes, "US-ASCII");
-                        readBufferPosition = 0;
-                        Log.i(TAG, "Data: " + data);
-                    }
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(serialInputStream));
+                StringBuilder total = new StringBuilder();
+                String line;
+                while ((line = r.readLine()) != null) {
+                    total.append(line).append('\n');
                 }
+                Log.i(TAG, "Input String: " + total.toString());
+//                byte[] packetBytes = new byte[bytesAvailable];
+//                serialInputStream.read(packetBytes);
+//                for (int i = 0; i < bytesAvailable; i++) {
+//                    byte b = packetBytes[i];
+//                    if (b == delimiter) {
+//                        byte[] encodedBytes = new byte[readBufferPosition];
+//                        System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+//                        final String data = new String(encodedBytes, "US-ASCII");
+//                        readBufferPosition = 0;
+//                        Log.i(TAG, "Data: " + data);
+//                    }
+//                }
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

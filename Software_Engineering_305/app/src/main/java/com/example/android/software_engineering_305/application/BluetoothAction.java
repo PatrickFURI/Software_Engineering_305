@@ -9,8 +9,10 @@ package com.example.android.software_engineering_305.application;
 public enum BluetoothAction
 {
     connect ("example.android.software_engineering_305.application.connect"),
+    connectionReady ("example.android.software_engineering_305.application.connectionReady"),
     disconnect ("example.android.software_engineering_305.application.disconnect"),
-    write ("example.android.software_engineering_305.application.write");
+    write ("example.android.software_engineering_305.application.write"),
+    read ("example.android.software_engineering_305.application.read");
 
     private final String mAction;
 
@@ -19,13 +21,18 @@ public enum BluetoothAction
     }
 
     public static BluetoothAction getAction(String action) {
-        switch (action) {
+        switch (action)
+        {
             case "example.android.software_engineering_305.application.connect":
                 return connect;
+            case "example.android.software_engineering_305.application.connectionReady":
+                return connectionReady;
             case "example.android.software_engineering_305.application.disconnect":
                 return disconnect;
             case "example.android.software_engineering_305.application.write":
                 return write;
+            case "example.android.software_engineering_305.application.read":
+                return read;
             default:
                 return null;
         }

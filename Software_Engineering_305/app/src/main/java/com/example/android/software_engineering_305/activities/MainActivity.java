@@ -6,7 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.android.software_engineering_305.R;
 
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     private Context mContext;
     private Button  startButton;
+    private TextView placeHolderText;
 
     /**         --onCreate(...)--
      *   Executes when the MainActivity is launched (when the app opens).
@@ -32,6 +36,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
+
+        placeHolderText = findViewById(R.id.placeholderLogo);
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.logofadein);
+        placeHolderText.startAnimation(fadeInAnimation);
+
 
         // Sets up the start button
         startButton = findViewById(R.id.main_start);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -38,7 +39,8 @@ public class SettingsActivity extends AppCompatActivity
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothService.write(mContext, "Hey");
+                BluetoothService.write(mContext, "X0");
+                //BluetoothService.read(mContext);
             }
         });
     }
@@ -56,5 +58,28 @@ public class SettingsActivity extends AppCompatActivity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         super.onBackPressed();
+    }
+
+    /**               --onOptionsItemSelected(...)--
+     *
+     * Same functionality as pressing the back button. This will open the parent activity (ScanActivity)
+     * Also, disconnects from the current device
+     *
+     * @param item: Item from the action bar that was selected, in this case the back button
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Log.e(TAG, "Home item pressed. Navigating to " + getParentActivityIntent());
+                BluetoothService.disconnect(mContext);
+                Intent intent = this.getParentActivityIntent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+                break;
+        }
+        return true;
     }
 }

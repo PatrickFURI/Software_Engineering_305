@@ -6,14 +6,18 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.android.software_engineering_305.R;
 import com.example.android.software_engineering_305.services.BluetoothService;
 
@@ -55,6 +59,7 @@ public class ScanActivity extends AppCompatActivity
         // Sets up the activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
+        getSupportActionBar().setHomeButtonEnabled(false);
         mContext = this;
 
         // Sets up the text view
@@ -95,6 +100,11 @@ public class ScanActivity extends AppCompatActivity
                     if(connectionAddress != null)
                     {
                         BluetoothService.connect(mContext, connectionAddress);
+                    }
+                    else
+                    {
+                        Log.i(TAG, "No device was selected.");
+                        Toast.makeText(mContext, "Please select a device.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
@@ -138,7 +148,7 @@ public class ScanActivity extends AppCompatActivity
         if(pairedDevices.size() > 0)
         {
             for(BluetoothDevice device : pairedDevices) {
-                Log.e(TAG, "Paired device found: " + device.getAddress());
+                Log.i(TAG, "Paired device found: " + device.getAddress());
                 myList.add(device.getAddress());
             }
         }
@@ -156,6 +166,27 @@ public class ScanActivity extends AppCompatActivity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         super.onBackPressed();
+    }
+
+    /**               --onOptionsItemSelected(...)--
+     *
+     * Same functionality as pressing the back button. This will open the parent activity (MainActivity)
+     *
+     * @param item: Item from the action bar that was selected, in this case the back button
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Log.e(TAG, "Home item pressed. Navigating to " + getParentActivityIntent());
+                Intent intent = this.getParentActivityIntent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+                break;
+        }
+        return true;
     }
 
 }

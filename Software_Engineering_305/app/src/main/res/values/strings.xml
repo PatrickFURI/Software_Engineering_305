@@ -3,4 +3,5 @@
     <string name="start_button_text"> Start </string>
     <string name="scan_button_text"> Scan </string>
     <string name="connect_button_text"> Connect </string>
+    <string name="send_command_button_text">Send Command</string>
 </resources>

@@ -99,7 +99,15 @@ public class ScanActivity extends AppCompatActivity
                     // Checks to see if you've selected an address to connect to
                     if(connectionAddress != null)
                     {
-                        BluetoothService.connect(mContext, connectionAddress);
+                        //TODO: BACKEND: convert to boolean
+                        /*if(*/BluetoothService.connect(mContext, connectionAddress);/*)
+                        {
+                            // Leaves this activity, goes to SettingsActivity
+                            Intent intent = new Intent(mContext, SettingsActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }*/
                     }
                     else
                     {

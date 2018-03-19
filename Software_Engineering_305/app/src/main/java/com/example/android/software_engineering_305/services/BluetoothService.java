@@ -108,20 +108,20 @@ public class BluetoothService extends Service
      *
      * @param deviceAddress: The address to the bluetooth device that the user selected
      */
-    public void connect(String deviceAddress)
+    public boolean connect(String deviceAddress)
     {
         // Checks to see if we are currently connected
         if(connected)
         {
             Log.i(TAG,"Failed: Connection request while already connected");
-            return;
+            return false;
         }
         // Checks to see if Bluetooth is working
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter== null || !mBluetoothAdapter.isEnabled())
         {
             Log.i(TAG,"Failed: Bluetooth Adapter Error");
-            return;
+            return false;
         }
         // Gets paired devices
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -139,7 +139,7 @@ public class BluetoothService extends Service
         if(mDevice == null)
         {
             Log.e(TAG,"Failed: Device could not be found");
-            return;
+            return false;
         }
 
         try{
@@ -153,6 +153,7 @@ public class BluetoothService extends Service
             connected = true;
             listenForData();
             Log.e(TAG,"Success! Connected to " + mDevice.getName());
+            return true;
         }
         catch (IOException e)
         {
@@ -160,6 +161,7 @@ public class BluetoothService extends Service
             serialInputStream = null;
             serialOutputStream = null;
             e.printStackTrace();
+            return false;
         }
 
     }

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,9 +24,13 @@ import com.example.android.software_engineering_305.services.BluetoothService;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 
 /**
@@ -39,12 +44,10 @@ public class ScanActivity extends AppCompatActivity
     private ListView            mDeviceList;
     private Button              connectButton;
     private TextView            connectPrompt;
-
+    private SimpleAdapter       listAdapter;
     private String              connectionAddress;
     private BluetoothAdapter    mBluetoothAdapter;
-    private ArrayAdapter<String> addressAdapter;
-    private List<String>        myList = new ArrayList<>();
-
+    ArrayList<HashMap<String,String>> myList = new ArrayList<HashMap<String,String>>();
     /**              --onCreate(...)--
      *   Executes when the ScanActivity is launched.
      *
@@ -70,9 +73,10 @@ public class ScanActivity extends AppCompatActivity
         getPairedDevices();
         if(myList.size() > 0)
         {
-            // Creates a list adapter with address strings, then sets that to list
-            addressAdapter = new ArrayAdapter<String>(this, R.layout.listitem_device, myList);
-            mDeviceList.setAdapter(addressAdapter);
+            // Creates a simple adapter with address strings and name strings, then sets that to list
+            listAdapter = new SimpleAdapter(this, myList, R.layout.activity_scan_list_items, new String[] { "address","name"},
+                    new int[] {R.id.address, R.id.name});
+            mDeviceList.setAdapter(listAdapter);
         }
         else
             Log.i(TAG, "Paired Devices array error.");
@@ -82,7 +86,7 @@ public class ScanActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-                connectionAddress = adapterView.getItemAtPosition(i).toString();
+                connectionAddress = ((HashMap<String,String>)adapterView.getItemAtPosition(i)).get("name");
                 connectPrompt.setText("Connect to " + connectionAddress + "?");
             }
         });
@@ -99,15 +103,7 @@ public class ScanActivity extends AppCompatActivity
                     // Checks to see if you've selected an address to connect to
                     if(connectionAddress != null)
                     {
-                        //TODO: BACKEND: convert to boolean
-                        /*if(*/BluetoothService.connect(mContext, connectionAddress);/*)
-                        {
-                            // Leaves this activity, goes to SettingsActivity
-                            Intent intent = new Intent(mContext, SettingsActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            finish();
-                        }*/
+                        BluetoothService.connect(mContext, connectionAddress);
                     }
                     else
                     {
@@ -156,8 +152,11 @@ public class ScanActivity extends AppCompatActivity
         if(pairedDevices.size() > 0)
         {
             for(BluetoothDevice device : pairedDevices) {
+                HashMap<String,String> btDevice = new HashMap<>(); //need to use a hashmap for the multiline display
                 Log.i(TAG, "Paired device found: " + device.getAddress());
-                myList.add(device.getAddress());
+                btDevice.put("name",device.getName());
+                btDevice.put("address",device.getAddress());
+                myList.add(btDevice);
             }
         }
     }

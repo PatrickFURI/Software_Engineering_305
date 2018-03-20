@@ -24,13 +24,10 @@ import com.example.android.software_engineering_305.services.BluetoothService;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
 
 
 /**
@@ -42,12 +39,12 @@ public class ScanActivity extends AppCompatActivity
     private static final String TAG = "ScanActivity";
     private Context             mContext;
     private ListView            mDeviceList;
-    private Button              connectButton;
-    private TextView            connectPrompt;
+    private Button              connectButton, disconnectButton;
     private SimpleAdapter       listAdapter;
     private String              connectionAddress;
     private BluetoothAdapter    mBluetoothAdapter;
-    ArrayList<HashMap<String,String>> myList = new ArrayList<HashMap<String,String>>();
+    private ArrayList<HashMap<String,String>> myList = new ArrayList<HashMap<String,String>>();
+
     /**              --onCreate(...)--
      *   Executes when the ScanActivity is launched.
      *
@@ -64,9 +61,6 @@ public class ScanActivity extends AppCompatActivity
         setContentView(R.layout.activity_scan);
         getSupportActionBar().setHomeButtonEnabled(false);
         mContext = this;
-
-        // Sets up the text view
-        connectPrompt = findViewById(R.id.text_connect);
 
         // Sets up the paired device list
         mDeviceList = findViewById(R.id.device_list);
@@ -87,12 +81,13 @@ public class ScanActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 connectionAddress = ((HashMap<String,String>)adapterView.getItemAtPosition(i)).get("name");
-                connectPrompt.setText("Connect to " + connectionAddress + "?");
+                BluetoothService.connect(mContext, connectionAddress);
+                Toast.makeText(mContext, "Connecting...", Toast.LENGTH_SHORT).show();
+                //connectPrompt.setText("Connect to " + connectionAddress + "?");
             }
         });
 
         // Sets up the connect button
-        //TODO: BACKEND: Fix the connect button issue
         connectButton = findViewById(R.id.connect_button);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,16 +95,7 @@ public class ScanActivity extends AppCompatActivity
             {
                 if(!BluetoothService.connected)
                 {
-                    // Checks to see if you've selected an address to connect to
-                    if(connectionAddress != null)
-                    {
-                        BluetoothService.connect(mContext, connectionAddress);
-                    }
-                    else
-                    {
-                        Log.i(TAG, "No device was selected.");
-                        Toast.makeText(mContext, "Please select a device.", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(mContext, "Please select a device.", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -119,8 +105,24 @@ public class ScanActivity extends AppCompatActivity
                     startActivity(intent);
                     finish();
                 }
+                Log.e(TAG, "Connected: " + BluetoothService.connected);
             }
         });
+        disconnectButton = findViewById(R.id.disconnect_button);
+        disconnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(BluetoothService.connected)
+                {
+                    Toast.makeText(mContext, "Disconnecting...", Toast.LENGTH_SHORT).show();
+                    BluetoothService.disconnect(mContext);
+                }
+                else
+                    Toast.makeText(mContext, "Not Currently Connected", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         Log.i(TAG, "ScanActivity loaded.");
     }
@@ -131,7 +133,7 @@ public class ScanActivity extends AppCompatActivity
      *  phone before communication starts. This activity enables bluetooth if it's disabled,
      *  then gets a list of each bluetooth address in your paired devices.
      */
-    void getPairedDevices()
+    private void getPairedDevices()
     {
         // Gets the Bluetooth adapter, used to perform any Bluetooth task
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

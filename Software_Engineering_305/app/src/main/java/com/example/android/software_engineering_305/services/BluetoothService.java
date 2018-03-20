@@ -6,18 +6,15 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.software_engineering_305.application.BluetoothAction;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
@@ -96,7 +93,7 @@ public class BluetoothService extends Service
                 write(data);
                 break;
             case read:
-                listenForData();
+                read();
                 break;
         }
         return START_REDELIVER_INTENT;
@@ -108,20 +105,20 @@ public class BluetoothService extends Service
      *
      * @param deviceAddress: The address to the bluetooth device that the user selected
      */
-    public boolean connect(String deviceAddress)
+    public void connect(String deviceAddress)
     {
         // Checks to see if we are currently connected
         if(connected)
         {
             Log.i(TAG,"Failed: Connection request while already connected");
-            return false;
+            return;
         }
         // Checks to see if Bluetooth is working
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter== null || !mBluetoothAdapter.isEnabled())
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled())
         {
             Log.i(TAG,"Failed: Bluetooth Adapter Error");
-            return false;
+            return;
         }
         // Gets paired devices
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -139,7 +136,7 @@ public class BluetoothService extends Service
         if(mDevice == null)
         {
             Log.e(TAG,"Failed: Device could not be found");
-            return false;
+            return;
         }
 
         try{
@@ -151,9 +148,9 @@ public class BluetoothService extends Service
             serialInputStream = serialSocket.getInputStream();
             serialOutputStream = serialSocket.getOutputStream();
             connected = true;
-            listenForData();
+            Toast.makeText(mContext, "Connected", Toast.LENGTH_SHORT).show();
+            //read();
             Log.e(TAG,"Success! Connected to " + mDevice.getName());
-            return true;
         }
         catch (IOException e)
         {
@@ -161,7 +158,6 @@ public class BluetoothService extends Service
             serialInputStream = null;
             serialOutputStream = null;
             e.printStackTrace();
-            return false;
         }
 
     }
@@ -199,6 +195,29 @@ public class BluetoothService extends Service
         try{
             data += '\n';
             serialOutputStream.write(data.getBytes());
+            Log.i(TAG, "Wrote: " + data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void read()
+    {
+        try {
+            readBufferPosition = 0;
+            readBuffer = new byte[256]; // Might need to change to 1024 if issues
+            // Checks to see if a message is in the input stream
+            int bytesAvailable = serialInputStream.available();
+            if (bytesAvailable > 0) {
+                // Reads the message
+                int bytes = serialInputStream.read(readBuffer);
+                String message = new String(readBuffer, 0, bytes);
+                Log.i(TAG, "Read: " + message);
+            }
+            else
+                Log.i(TAG, "Input Stream clear. No message available");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,36 +258,6 @@ public class BluetoothService extends Service
         Intent intent = new Intent(context, BluetoothService.class);
         intent.setAction(BluetoothAction.read.toString());
         context.startService(intent);
-    }
-
-    // Doesn't work yet
-    //TODO: BACKEND: Implement correct reading code
-    private void listenForData()
-    {
-        try {
-            Log.i(TAG, "Here");
-            final byte delimiter = 10;
-            int bytesAvailable = serialInputStream.available();
-            if (bytesAvailable > 0) {
-
-                byte[] packetBytes = new byte[bytesAvailable];
-                serialInputStream.read(packetBytes);
-                for (int i = 0; i < bytesAvailable; i++) {
-                    byte b = packetBytes[i];
-                    if (b == delimiter) {
-                        byte[] encodedBytes = new byte[readBufferPosition];
-                        System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                        final String data = new String(encodedBytes, "US-ASCII");
-                        readBufferPosition = 0;
-                        Log.i(TAG, "Data: " + data);
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Nullable

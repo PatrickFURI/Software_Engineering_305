@@ -43,6 +43,12 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         mContext = this;
 
         //TODO: UI: Create the widgets used to store and change device information
+        /*
+        -Slider for top, middle, and bottom knob
+        -Other widget for Cycle Mode
+        -Other widget for Start / Stop time
+        -Other widget for light threshold
+         */
 
         sendButton = findViewById(R.id.write_btn);
         sendButton.setOnClickListener(new View.OnClickListener() {

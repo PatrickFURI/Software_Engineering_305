@@ -9,7 +9,7 @@ public interface CommandInterface
     //TODO: COMMAND: Finish the command interface
     interface Commands
     {
-        String DEBUG_AVAILABLE = "X0";          // Displays "Laser Scarecrow Debug Available!" if true
+        String DEBUG_AVAILABLE = "L201";          // Displays "Laser Scarecrow Debug Available!" if true
     }
 
     // Join the two together with Comands.___ + Options.____

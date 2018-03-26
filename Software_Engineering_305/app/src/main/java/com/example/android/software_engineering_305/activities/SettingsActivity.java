@@ -10,10 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
 
 import com.example.android.software_engineering_305.R;
 import com.example.android.software_engineering_305.application.CommandInterface;
 import com.example.android.software_engineering_305.services.BluetoothService;
+import com.example.android.software_engineering_305.services.DataLogService;
+import com.example.android.software_engineering_305.services.Directories;
 
 /**
  * Created by Andrew on 2/19/18.
@@ -76,7 +80,13 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     //TODO: COMMAND: Create the restoreDefaults method
     private void restoreDefaults()
     {
+        // Read every line
 
+        // Get the names
+
+        // Make something where you can select the name
+
+        // Get the information
     }
 
     /**                     --saveAsDefault()--
@@ -88,7 +98,8 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     //TODO: COMMAND: Create the saveAsDefault method
     private void saveAsDefault()
     {
-
+        String data = sendButton.getText().toString() + "," + readButton.getText().toString();
+        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
     }
 
     //TODO: UI: Create a settings menu in the action bar to call default methods. Going to need menu layout file

@@ -26,5 +26,14 @@
             android:layout_marginTop="68dp"
             android:text="Read"
             style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <SeekBar
+            android:id="@+id/slider1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="94dp" />
+
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

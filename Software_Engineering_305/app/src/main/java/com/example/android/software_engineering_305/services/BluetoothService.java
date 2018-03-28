@@ -149,7 +149,7 @@ public class BluetoothService extends Service
             serialOutputStream = serialSocket.getOutputStream();
             connected = true;
             Toast.makeText(mContext, "Connected", Toast.LENGTH_SHORT).show();
-            //read();
+            // write here?
             Log.e(TAG,"Success! Connected to " + mDevice.getName());
         }
         catch (IOException e)

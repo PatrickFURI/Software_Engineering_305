@@ -28,6 +28,9 @@ import java.util.Map;
  * -Implements CommandInterface to choose each command
  */
 
+//TODO: BACKEND: Add ability to delete CSV file entry
+//TODO: UI: Add a delete button
+
 //TODO: BACKEND: Send the information from the device to this activity via a handler
 public class SettingsActivity extends AppCompatActivity implements CommandInterface
 {
@@ -68,16 +71,6 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
                 //BluetoothService.read(mContext);
             }
         });
-
-        readButton = findViewById(R.id.read_button);
-        readButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BluetoothService.read(mContext);
-            }
-        });
-
-        DevDataTransfer.createHashtable();
     }
 
     /**                     --restoreDefaults()--

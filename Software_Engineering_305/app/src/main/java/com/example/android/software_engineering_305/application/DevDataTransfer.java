@@ -19,19 +19,28 @@ public class DevDataTransfer
 {
     private static final String TAG = "DevDataTransfer";
     // Andrew: You'll be sending these two strings after you collect all the data
-    private String values, codes;
+    private static String  values = "",
+                    codes = "";
 
     public static void parseResponse(String response)
     {
-        Pattern pattern = Pattern.compile(", *");
-        Matcher matcher = pattern.matcher(response);
-        if (matcher.find()) {
-            String string1 = response.substring(0, matcher.start());
-            String string2 = response.substring(matcher.end());
-
-            Log.e(TAG, "String 1: " + string1 + "  String 2: " + string2);
+        String[] result = response.split("\\r?\\n");
+        for(String line : result)
+        {
+            if(!line.equals("ok"))
+            {
+                Log.e(TAG, "Line: " + line);
+                Pattern pattern = Pattern.compile("  *");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    codes += line.substring(0, matcher.start()) + ' ';
+                    values += line.substring(matcher.end()) + ' ';
+                }
+            }
         }
 
+        Log.e(TAG, "Values: " + values);
+        Log.e(TAG, "Codes: " + codes);
     }
 
     // Jack: Map the values and codes into two arrays

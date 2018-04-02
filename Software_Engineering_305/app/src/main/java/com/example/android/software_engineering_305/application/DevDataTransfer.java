@@ -2,6 +2,8 @@ package com.example.android.software_engineering_305.application;
 
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +24,19 @@ public class DevDataTransfer
     private static String  values = "",
                     codes = "";
 
+    /**                 --parseResponse(...)--
+     * Takes the string from the BluetoothService read() and creates two strings
+     * that can be parsed and made into a hashtable
+     *
+     * @param response
+     */
     public static void parseResponse(String response)
     {
+        // Preprocesses the string
         String[] result = response.split("\\r?\\n");
         for(String line : result)
         {
+            // Seperates the string into two different ones
             if(!line.equals("ok"))
             {
                 Log.e(TAG, "Line: " + line);
@@ -38,9 +48,25 @@ public class DevDataTransfer
                 }
             }
         }
+    }
 
-        Log.e(TAG, "Values: " + values);
-        Log.e(TAG, "Codes: " + codes);
+    /**
+     *
+     * @return: Returns the map to the SettingsActivity
+     */
+    public static Map<String, String> createHashtable() {
+        Map<String, String> map = new HashMap<String, String>();
+        String[] keys = codes.split(" ");
+        String[] valArray = values.split(" ");
+        for (int i = 0 ; i < keys.length ; i++) {
+            try {
+                map.put(keys[i], valArray[i]);
+            }
+            catch (Exception e) {
+                System.out.println("exception caused by " + e);
+            }
+        }
+        return map;
     }
 
     // Jack: Map the values and codes into two arrays

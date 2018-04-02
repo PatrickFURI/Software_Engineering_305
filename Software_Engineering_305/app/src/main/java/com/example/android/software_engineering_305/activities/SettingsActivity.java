@@ -15,9 +15,12 @@ import android.widget.SeekBar;
 
 import com.example.android.software_engineering_305.R;
 import com.example.android.software_engineering_305.application.CommandInterface;
+import com.example.android.software_engineering_305.application.DevDataTransfer;
 import com.example.android.software_engineering_305.services.BluetoothService;
 import com.example.android.software_engineering_305.services.DataLogService;
 import com.example.android.software_engineering_305.services.Directories;
+
+import java.util.Map;
 
 /**
  * Created by Andrew on 2/19/18.
@@ -54,6 +57,9 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         -Other widget for light threshold
          */
 
+        //TODO: This is where you get the map
+        Map<String, String> map = DevDataTransfer.createHashtable();
+
         sendButton = findViewById(R.id.write_btn);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +76,8 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
                 BluetoothService.read(mContext);
             }
         });
+
+        DevDataTransfer.createHashtable();
     }
 
     /**                     --restoreDefaults()--

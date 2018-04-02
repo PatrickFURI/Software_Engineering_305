@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.software_engineering_305.application.BluetoothAction;
+import com.example.android.software_engineering_305.application.DevDataTransfer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,6 +151,24 @@ public class BluetoothService extends Service
             connected = true;
             Toast.makeText(mContext, "Connected", Toast.LENGTH_SHORT).show();
             // write here?
+            for(int i = 0; i < 3; i++)
+            {
+                switch(i)
+                {
+                    case 0:
+                        BluetoothService.write(mContext, "L101");
+                        Log.e(TAG, "Wrote and read for L101");
+                        break;
+                    case 1:
+                        BluetoothService.write(mContext, "L131");
+                        Log.e(TAG, "Wrote and read for L131");
+                        break;
+                    case 2:
+                        BluetoothService.write(mContext, "L132");
+                        Log.e(TAG, "Wrote and read for L132");
+                        break;
+                }
+            }
             Log.e(TAG,"Success! Connected to " + mDevice.getName());
         }
         catch (IOException e)
@@ -212,7 +231,8 @@ public class BluetoothService extends Service
                 // Reads the message
                 int bytes = serialInputStream.read(readBuffer);
                 String message = new String(readBuffer, 0, bytes);
-                Log.i(TAG, "Read: " + message);
+                Log.i(TAG, "Read: \n" + message);
+                DevDataTransfer.parseResponse(message);
             }
             else
                 Log.i(TAG, "Input Stream clear. No message available");

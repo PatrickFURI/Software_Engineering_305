@@ -80,7 +80,7 @@ public class ScanActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-                connectionAddress = ((HashMap<String,String>)adapterView.getItemAtPosition(i)).get("name");
+                connectionAddress = ((HashMap<String,String>)adapterView.getItemAtPosition(i)).get("address");
                 BluetoothService.connect(mContext, connectionAddress);
                 Toast.makeText(mContext, "Connecting...", Toast.LENGTH_SHORT).show();
                 //connectPrompt.setText("Connect to " + connectionAddress + "?");
@@ -99,6 +99,7 @@ public class ScanActivity extends AppCompatActivity
                 }
                 else
                 {
+                    BluetoothService.read(mContext);
                     // Leaves this activity, goes to SettingsActivity
                     Intent intent = new Intent(mContext, SettingsActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

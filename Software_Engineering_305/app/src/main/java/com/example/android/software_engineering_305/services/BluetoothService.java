@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.software_engineering_305.application.BluetoothAction;
+import com.example.android.software_engineering_305.application.CommandInterface;
 import com.example.android.software_engineering_305.application.DevDataTransfer;
 
 import java.io.IOException;
@@ -65,8 +66,8 @@ public class BluetoothService extends Service
      *
      * @param intent: The intent that was started. This allows the operation to run in the
      *              background. The intent also holds extra information of type String.
-     * @param flags: Don't worry about it
-     * @param startID: Don't worry about it
+     * @param flags
+     * @param startID
      * @return
      */
     @Override
@@ -150,25 +151,8 @@ public class BluetoothService extends Service
             serialOutputStream = serialSocket.getOutputStream();
             connected = true;
             Toast.makeText(mContext, "Connected", Toast.LENGTH_SHORT).show();
-            // write here?
-            for(int i = 0; i < 3; i++)
-            {
-                switch(i)
-                {
-                    case 0:
-                        BluetoothService.write(mContext, "L101");
-                        Log.e(TAG, "Wrote and read for L101");
-                        break;
-                    case 1:
-                        BluetoothService.write(mContext, "L131");
-                        Log.e(TAG, "Wrote and read for L131");
-                        break;
-                    case 2:
-                        BluetoothService.write(mContext, "L132");
-                        Log.e(TAG, "Wrote and read for L132");
-                        break;
-                }
-            }
+            // Writes all commands that
+            DevDataTransfer.writeLookCommands(mContext);
             Log.e(TAG,"Success! Connected to " + mDevice.getName());
         }
         catch (IOException e)

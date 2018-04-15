@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SeekBar;
 
 import com.example.android.software_engineering_305.R;
@@ -29,15 +26,12 @@ import java.util.Map;
  */
 
 //TODO: BACKEND: Add ability to delete CSV file entry
-//TODO: UI: Add a delete button
-
-//TODO: BACKEND: Send the information from the device to this activity via a handler
 public class SettingsActivity extends AppCompatActivity implements CommandInterface
 {
     private static final String TAG = "SettingsActivity";
     private Context mContext;
-    private Button sendButton;
-    private Button readButton;
+    private Button  updateButton, readButton;
+    private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
 
     /**         --onCreate(...)--
      *
@@ -52,25 +46,30 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         setContentView(R.layout.activity_settings);
         mContext = this;
 
-        //TODO: UI: Create the widgets used to store and change device information
-        /*
-        -Slider for top, middle, and bottom knob
-        -Other widget for Cycle Mode
-        -Other widget for Start / Stop time
-        -Other widget for light threshold
-         */
+        // Find the seek bar widgets
+        stepSpeedBar = findViewById(R.id.stepSpeedBar);
+        rotationBar = findViewById(R.id.rotationBar);
+        pitchMinBar = findViewById(R.id.pitchMinBar);
+        ranRangeBar = findViewById(R.id.ranRangeBar);
+        lightBar = findViewById(R.id.lightBar);
 
         //TODO: This is where you get the map
         Map<String, String> map = DevDataTransfer.createHashtable();
 
-        sendButton = findViewById(R.id.write_btn);
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        // Find the button widgets and give them click functionality
+        updateButton = findViewById(R.id.updateBtn);
+        updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothService.write(mContext, Commands.DEBUG_AVAILABLE);
-                //BluetoothService.read(mContext);
+                // BluetoothService.write(mContext, Commands.DEBUG_AVAILABLE);
+                updateSettings();
             }
         });
+    }
+
+    private void updateSettings()
+    {
+        //TODO: Get values from the SeekBar and ad
     }
 
     /**                     --restoreDefaults()--
@@ -99,19 +98,9 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     //TODO: COMMAND: Create the saveAsDefault method
     private void saveAsDefault()
     {
-        String data = sendButton.getText().toString() + "," + readButton.getText().toString();
+        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
         DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
     }
-
-    //TODO: UI: Create a settings menu in the action bar to call default methods. Going to need menu layout file
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu)
-//    {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//        return true;
-//    }
-
 
     /**                     --onBackPressed()--
      *  Returns to the parent activity (ScanActivity) if the back button is pressed
@@ -126,6 +115,16 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         super.onBackPressed();
+    }
+
+    /**                     --onDestroy()--
+     *  If the app closes at this point, disconnect from Bluetooth device first
+     */
+    @Override
+    protected void onDestroy()
+    {
+        BluetoothService.disconnect(mContext);
+        super.onDestroy();
     }
 
     /**               --onOptionsItemSelected(...)--
@@ -148,8 +147,6 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
                 startActivity(intent);
                 finish();
                 break;
-
-            //TODO: UI: Add functionality to Settings Menu
         }
         return true;
     }

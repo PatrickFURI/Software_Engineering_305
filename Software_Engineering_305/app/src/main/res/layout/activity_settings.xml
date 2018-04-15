@@ -37,12 +37,14 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Stepper Speed"/>
+
                 <SeekBar
+                    android:id="@+id/stepSpeedBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:min="0"
-                    android:max="1023"/>
+                    android:max="1023"
+                    android:min="0" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -54,12 +56,14 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Rotation"/>
+
                 <SeekBar
+                    android:id="@+id/rotationBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:min="0"
-                    android:max="360"/>
+                    android:max="360"
+                    android:min="0" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -71,12 +75,14 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Servo Pitch Minimum"/>
+
                 <SeekBar
+                    android:id="@+id/pitchMinBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:min="0"
-                    android:max="1023"/>
+                    android:max="1023"
+                    android:min="0" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -88,12 +94,14 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Servo Pitch Random Range"/>
+
                 <SeekBar
+                    android:id="@+id/ranRangeBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:min="0"
-                    android:max="1023"/>
+                    android:max="1023"
+                    android:min="0" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -105,12 +113,14 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Light Sensor Threshold"/>
+
                 <SeekBar
+                    android:id="@+id/lightBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:min="0"
-                    android:max="1023"/>
+                    android:max="1023"
+                    android:min="0" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -177,27 +187,31 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/write_btn"
+            android:id="@+id/updateBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="Update Device Settings"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:text="Update Device Settings" />
+
         <Button
+            android:id="@+id/reloadBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="Reload Current Device Settings"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:text="Reload Current Device Settings" />
+
         <Button
+            android:id="@+id/saveBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="Save Configuration to File"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:text="Save Configuration to File" />
 
         <LinearLayout
             android:layout_width="wrap_content"

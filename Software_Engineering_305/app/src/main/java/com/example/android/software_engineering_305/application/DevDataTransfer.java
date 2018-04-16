@@ -86,46 +86,102 @@ public class DevDataTransfer implements CommandInterface
             switch(i)
             {
                 case 0:
-                    BluetoothService.write(mContext, "L101");
-                    Log.e(TAG, "Wrote and read for L101");
+                    BluetoothService.write(mContext, Commands.L_STEPPER_SPEED);
+                    Log.e(TAG, "Looked for Stepper Speed");
                     break;
                 case 1:
-                    BluetoothService.write(mContext, "L131");
-                    Log.e(TAG, "Wrote and read for L131");
+                    BluetoothService.write(mContext, Commands.L_PITCH_MIN);
+                    Log.e(TAG, "Looked for Pitch Min");
                     break;
                 case 2:
-                    BluetoothService.write(mContext, "L132");
-                    Log.e(TAG, "Wrote and read for L132");
+                    BluetoothService.write(mContext, Commands.L_PITCH_RANGE);
+                    Log.e(TAG, "Looked for Pitch Range");
                     break;
                 case 3:
-                    BluetoothService.write(mContext, "L111");
-                    Log.e(TAG, "Wrote and read for L131");
+                    BluetoothService.write(mContext, Commands.L_ROT_ANGLE);
+                    Log.e(TAG, "Looked for Rotation Angle");
                     break;
                 case 4:
-                    BluetoothService.write(mContext, Commands.CYCLE_MODE);
-                    Log.e(TAG, "Wrote Cycle Mode");
+                    BluetoothService.write(mContext, Commands.L_CYCLE_MODE);
+                    Log.e(TAG, "Looked for Cycle Mode");
                     break;
                 case 5:
-                    BluetoothService.write(mContext, "L221");
-                    Log.e(TAG, "Wrote and read for L221");
+                    BluetoothService.write(mContext, Commands.L_LIGHT_THRES);
+                    Log.e(TAG, "Looked for Light Threshold");
                     break;
                 case 6:
-                    BluetoothService.write(mContext, "L251");
-                    Log.e(TAG, "Wrote and read for L251");
+                    BluetoothService.write(mContext, Commands.L_YEAR_MONTH_DAY);
+                    Log.e(TAG, "Looked for Year, Month, Day");
                     break;
                 case 7:
-                    BluetoothService.write(mContext, "L252");
-                    Log.e(TAG, "Wrote and read for L252");
+                    BluetoothService.write(mContext, Commands.L_HOUR_MIN_SEC);
+                    Log.e(TAG, "Looked for Hour, Min, Sec");
                     break;
                 case 8:
-                    BluetoothService.write(mContext, "L261");
-                    Log.e(TAG, "Wrote and read for L261");
+                    BluetoothService.write(mContext, Commands.L_WAKE_TIME);
+                    Log.e(TAG, "Looked for Wake Time");
                     break;
                 case 9:
-                    BluetoothService.write(mContext, "L262");
-                    Log.e(TAG, "Wrote and read for L262");
+                    BluetoothService.write(mContext, Commands.L_SLEEP_TIME);
+                    Log.e(TAG, "Looked for Sleep time");
                     break;
             }
         }
+    }
+
+    public static void writeSetCommands(Context mContext, int[] values)
+    {
+        for(int i = 0; i < 6; i++) // 6 for now, change to Commands.NUM_COMMANDS later
+        {
+            switch(i)
+            {
+                case 0:
+                    BluetoothService.write(mContext, Commands.S_STEPPER_SPEED + values[i]);
+                    Log.e(TAG, "Set for Stepper Speed");
+                    break;
+                case 1:
+                    BluetoothService.write(mContext, Commands.S_PITCH_MIN + values[i]);
+                    Log.e(TAG, "Set for Pitch Min");
+                    break;
+                case 2:
+                    BluetoothService.write(mContext, Commands.S_PITCH_RANGE + values[i]);
+                    Log.e(TAG, "Set for Pitch Range");
+                    break;
+                case 3:
+                    BluetoothService.write(mContext, Commands.S_ROT_ANGLE + values[i]);
+                    Log.e(TAG, "Set for Rotation Angle");
+                    break;
+                case 4:
+                    BluetoothService.write(mContext, Commands.S_CYCLE_MODE + values[i]);
+                    Log.e(TAG, "Set for Cycle Mode");
+                    break;
+                case 5:
+                    BluetoothService.write(mContext, Commands.S_LIGHT_THRES + values[i]);
+                    Log.e(TAG, "Set for Light Threshold");
+                    break;
+                case 6:
+                    BluetoothService.write(mContext, Commands.S_YEAR_MONTH_DAY + values[i]);
+                    Log.e(TAG, "Set for Year, Month, Day");
+                    break;
+                case 7:
+                    BluetoothService.write(mContext, Commands.S_HOUR_MIN_SEC + values[i]);
+                    Log.e(TAG, "Set for Hour, Min, Sec");
+                    break;
+                case 8:
+                    BluetoothService.write(mContext, Commands.S_WAKE_TIME + values[i]);
+                    Log.e(TAG, "Set for Wake Time");
+                    break;
+                case 9:
+                    BluetoothService.write(mContext, Commands.S_SLEEP_TIME + values[i]);
+                    Log.e(TAG, "Set for Sleep time");
+                    break;
+            }
+        }
+    }
+
+    public static void clearValues()
+    {
+        codes = "";
+        values = "";
     }
 }

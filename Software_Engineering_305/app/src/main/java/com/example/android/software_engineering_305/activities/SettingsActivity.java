@@ -69,7 +69,17 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
 
     private void updateSettings()
     {
-        //TODO: Get values from the SeekBar and ad
+        //TODO: Get values from the SeekBar and add them to set command
+        Log.i(TAG, "Logging new settings...");
+        int[] newValues = new int[Commands.NUM_COMMANDS];
+        newValues[0] = stepSpeedBar.getProgress();
+        newValues[1] = pitchMinBar.getProgress();
+        newValues[2] = ranRangeBar.getProgress();
+        newValues[3] = rotationBar.getProgress();
+        newValues[4] = 1; //Cycle Mode
+        newValues[5] = lightBar.getProgress();
+
+        DevDataTransfer.writeSetCommands(mContext, newValues);
     }
 
     /**                     --restoreDefaults()--
@@ -109,6 +119,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     @Override
     public void onBackPressed()
     {
+        DevDataTransfer.clearValues();
         BluetoothService.disconnect(mContext);
         Log.e(TAG, "Back pressed. Navigating to " + getParentActivityIntent());
         Intent intent = this.getParentActivityIntent();

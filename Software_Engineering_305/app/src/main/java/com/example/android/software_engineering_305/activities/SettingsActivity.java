@@ -1,14 +1,20 @@
 package com.example.android.software_engineering_305.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.example.android.software_engineering_305.R;
 import com.example.android.software_engineering_305.application.CommandInterface;
@@ -29,8 +35,10 @@ import java.util.Map;
 public class SettingsActivity extends AppCompatActivity implements CommandInterface
 {
     private static final String TAG = "SettingsActivity";
+    private static final String FILE_NAME = "/laser.csv";
+    private int[] newValues;
     private Context mContext;
-    private Button  updateButton, readButton;
+    private Button  updateButton, saveButton;
     private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
 
     /**         --onCreate(...)--
@@ -65,21 +73,34 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
                 updateSettings();
             }
         });
+        saveButton = findViewById(R.id.saveBtn);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createSaveBox();
+            }
+        });
     }
 
-    private void updateSettings()
+    private void setArrayValues()
     {
-        //TODO: Get values from the SeekBar and add them to set command
-        Log.i(TAG, "Logging new settings...");
-        int[] newValues = new int[Commands.NUM_COMMANDS];
+        newValues = new int[Commands.NUM_COMMANDS];
         newValues[0] = stepSpeedBar.getProgress();
         newValues[1] = pitchMinBar.getProgress();
         newValues[2] = ranRangeBar.getProgress();
         newValues[3] = rotationBar.getProgress();
         newValues[4] = 1; //Cycle Mode
         newValues[5] = lightBar.getProgress();
+    }
 
-        DevDataTransfer.writeSetCommands(mContext, newValues);
+    private void updateSettings()
+    {
+        //TODO: Get values from the SeekBar and add them to set command
+        Log.i(TAG, "Logging new settings...");
+        setArrayValues();
+
+        if(newValues != null)
+            DevDataTransfer.writeSetCommands(mContext, newValues);
     }
 
     /**                     --restoreDefaults()--
@@ -106,10 +127,46 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
      *
      */
     //TODO: COMMAND: Create the saveAsDefault method
-    private void saveAsDefault()
+    private void saveAsDefault(String configName)
     {
-        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
-        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
+//        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
+//        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
+
+        Log.e(TAG, "Configuration Name: " + configName);
+    }
+
+    private void createSaveBox()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Save Configuration");
+        builder.setMessage("Please enter the name of the configuration that you would like to save to your Android device.");
+
+        final EditText input = new EditText(mContext);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                String configName = input.getText().toString();
+                if(!configName.equals(""))
+                    saveAsDefault(configName);
+                else
+                    Toast.makeText(mContext, "Configuration Saved.", Toast.LENGTH_SHORT);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     /**                     --onBackPressed()--

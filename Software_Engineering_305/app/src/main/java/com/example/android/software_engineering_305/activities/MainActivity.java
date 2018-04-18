@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity
     private final static String[] PERMISSIONS = {
             Manifest.permission.BLUETOOTH,                  // Required for BLE connection, read, write
             Manifest.permission.BLUETOOTH_ADMIN,            // Required to access paired Bluetooth devices
-            Manifest.permission.ACCESS_COARSE_LOCATION      // Required to search for Bluetooth devices
+            Manifest.permission.ACCESS_COARSE_LOCATION,      // Required to search for Bluetooth devices
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     private static final int PERMISSIONS_CODE = 111;
     private boolean enabledBT, enabledBTA, enabledCL;
@@ -62,21 +63,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                // Checks to see if permissions are granted
-                if(enabledBT && enabledBTA && enabledCL)
-                {
-                    // Leaves this activity, goes to ScanActivity
-                    Intent intent = new Intent(mContext, ScanActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                }
-                else
-                {
-                    // Asks for the permissions
-                    Toast.makeText(mContext, "Please enable all permissions", Toast.LENGTH_SHORT).show();
-                    askPermissions();
-                }
+                // Leaves this activity, goes to ScanActivity
+                Intent intent = new Intent(mContext, ScanActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -98,39 +89,8 @@ public class MainActivity extends AppCompatActivity
             // The Results from this Request are handled in a Callback Below.
             requestPermissions(PERMISSIONS, PERMISSIONS_CODE);
         }
-        // If old device, we assume they give us permission
-        else
-        {
-            enabledBT = true;
-            enabledBTA = true;
-            enabledCL = true;
-        }
     }
 
-    /**         --onRequestPermissionsResult(...)--
-     *   After the permission is either granted or denied, this callback is called.
-     *   If granted, the boolean associated is set to true. If all are true, the user
-     *   can continue using the application
-     *
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults)
-    {
-        // Checks for Bluetooth
-        if (grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            enabledBT = true;
-        // Checks for Bluetooth Admin
-        if (grantResults.length > 0
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED)
-            enabledBTA = true;
-        // Checks for coarse location
-        if (grantResults.length > 0
-                && grantResults[2] == PackageManager.PERMISSION_GRANTED)
-            enabledCL = true;
-
-    }
 
     @Override
     protected void onStart() {

@@ -1,8 +1,11 @@
 package com.example.android.software_engineering_305.services;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,7 +20,7 @@ import java.io.IOException;
  * Service is called with the proper information given to it.
  */
 
-public class DataLogService  {
+public class DataLogService extends Service{
     /**
      * File to save the contents in. This Service creates all directories and files as needed
      * to save the data.
@@ -33,6 +36,8 @@ public class DataLogService  {
      * data that is passed. Otherwise, the header is not used.
      */
     private static final String EXTRA_HEADER = "uri.wbl.ear.extra_header";
+
+    private static File FILE_PATH;
 
     /**
      * The log(Context, File, String, String) method allows for other components to use this
@@ -76,6 +81,8 @@ public class DataLogService  {
             }
         }
 
+        FILE_PATH = file;
+
         // write to the file
         try
         {
@@ -94,5 +101,15 @@ public class DataLogService  {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static File getFilePath() {
+        return FILE_PATH;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

@@ -23,6 +23,7 @@ import com.example.android.software_engineering_305.services.BluetoothService;
 import com.example.android.software_engineering_305.services.DataLogService;
 import com.example.android.software_engineering_305.services.Directories;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -38,8 +39,9 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private static final String FILE_NAME = "/laser.csv";
     private int[] newValues;
     private Context mContext;
-    private Button  updateButton, saveButton;
+    private Button  updateButton, saveButton, reloadButton;
     private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
+
 
     /**         --onCreate(...)--
      *
@@ -61,6 +63,8 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         ranRangeBar = findViewById(R.id.ranRangeBar);
         lightBar = findViewById(R.id.lightBar);
 
+        setArrayValues();
+
         //TODO: This is where you get the map
         Map<String, String> map = DevDataTransfer.createHashtable();
 
@@ -78,6 +82,13 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
             @Override
             public void onClick(View view) {
                 createSaveBox();
+            }
+        });
+        reloadButton = findViewById(R.id.reloadBtn);
+        reloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                restoreDefaults();
             }
         });
     }
@@ -112,7 +123,11 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private void restoreDefaults()
     {
         // Read every line
+        File csvFile = DataLogService.getFilePath();
+        if(csvFile != null)
+        {
 
+        }
         // Get the names
 
         // Make something where you can select the name
@@ -131,8 +146,18 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     {
 //        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
 //        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
+        String row = configName;
+        if(newValues != null && newValues.length > 0) // TODO: Check if null
+        {
+            for(int i = 0; i < newValues.length; i++)
+            {
+                row += "," + newValues[i];
+            }
+            DataLogService.log(mContext, new File(Directories.getRootFile(mContext), "lsc_test"), row, "Nothing");
+        }
+        else
+            Log.e(TAG, "Value array is not instantiated.");
 
-        Log.e(TAG, "Configuration Name: " + configName);
     }
 
     private void createSaveBox()

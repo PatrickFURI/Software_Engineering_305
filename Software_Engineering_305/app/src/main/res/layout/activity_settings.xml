@@ -149,14 +149,17 @@
                     android:gravity="center_horizontal"
                     android:text="Wake Up Time"/>
                 <Spinner
+                    android:id="@+id/wakeHour"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <Spinner
+                    android:id="@+id/wakeMinute"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <Spinner
+                    android:id="@+id/wakeSecond"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
@@ -172,14 +175,17 @@
                     android:gravity="center_horizontal"
                     android:text="Sleep Time"/>
                 <Spinner
+                    android:id="@+id/sleepHour"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <Spinner
+                    android:id="@+id/sleepMinute"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <Spinner
+                    android:id="@+id/sleepSecond"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>

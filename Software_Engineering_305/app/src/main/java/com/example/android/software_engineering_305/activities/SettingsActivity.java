@@ -11,9 +11,11 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.software_engineering_305.R;
@@ -41,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private Context mContext;
     private Button  updateButton, saveButton, reloadButton;
     private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
+    private DataLogService DLS;
 
 
     /**         --onCreate(...)--
@@ -91,6 +94,30 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
                 restoreDefaults();
             }
         });
+
+        Spinner whSpin = (Spinner) findViewById(R.id.wakeHour);
+        Spinner wmSpin = (Spinner) findViewById(R.id.wakeMinute);
+        Spinner wsSpin = (Spinner) findViewById(R.id.wakeSecond);
+        Spinner shSpin = (Spinner) findViewById(R.id.sleepHour);
+        Spinner smSpin = (Spinner) findViewById(R.id.sleepMinute);
+        Spinner ssSpin = (Spinner) findViewById(R.id.sleepSecond);
+
+        ArrayAdapter<CharSequence> adapterHours = ArrayAdapter.createFromResource(this,
+                R.array.hours, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterMinSec = ArrayAdapter.createFromResource(this,
+                R.array.minutesSeconds, android.R.layout.simple_spinner_item);
+
+        adapterHours.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterMinSec.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        whSpin.setAdapter(adapterHours);
+        wmSpin.setAdapter(adapterMinSec);
+        wsSpin.setAdapter(adapterMinSec);
+        shSpin.setAdapter(adapterHours);
+        smSpin.setAdapter(adapterMinSec);
+        ssSpin.setAdapter(adapterMinSec);
+
+        DLS = new DataLogService();
     }
 
     private void setArrayValues()
@@ -123,11 +150,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private void restoreDefaults()
     {
         // Read every line
-        File csvFile = DataLogService.getFilePath();
-        if(csvFile != null)
-        {
 
-        }
         // Get the names
 
         // Make something where you can select the name
@@ -146,14 +169,15 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     {
 //        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
 //        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
-        String row = configName;
+        String[] values = new String[newValues.length];
+        values[0] = configName;
         if(newValues != null && newValues.length > 0) // TODO: Check if null
         {
             for(int i = 0; i < newValues.length; i++)
             {
-                row += "," + newValues[i];
+                values[i+1] = String.valueOf(newValues[i]);
             }
-            DataLogService.log(mContext, new File(Directories.getRootFile(mContext), "lsc_test"), row, "Nothing");
+            DLS.writeValues(values);
         }
         else
             Log.e(TAG, "Value array is not instantiated.");

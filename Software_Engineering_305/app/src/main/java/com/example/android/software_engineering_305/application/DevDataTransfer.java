@@ -25,7 +25,7 @@ public class DevDataTransfer implements CommandInterface
     private static final String TAG = "DevDataTransfer";
     // Andrew: You'll be sending these two strings after you collect all the data
     private static String  values = "",
-                    codes = "";
+                            codes = "";
 
     /**                 --parseResponse(...)--
      * Takes the string from the BluetoothService read() and creates two strings
@@ -59,20 +59,26 @@ public class DevDataTransfer implements CommandInterface
      * @return: Returns the map to the SettingsActivity
      */
     // TODO (Jack): Value will be set to "error(6)" if it was not received. Check for that here (or somewhere else!)
-    public static Map<String, String> createHashtable() {
-        Map<String, String> map = new HashMap<String, String>();
+    public static Map<String, Integer> createHashtable() {
+        Map<String, Integer> map = new HashMap();
         String[] keys = codes.split(" ");
-        String[] valArray = values.split(" ");
+        String[] vals = values.split(" ");
         for (int i = 0 ; i < keys.length ; i++) {
             try {
-                map.put(keys[i], valArray[i]);
+                if(vals[i].equals("error(6)"))
+                    vals[i] = "1";
+
+                map.put(keys[i], Integer.parseInt(vals[i]));
+
             }
             catch (Exception e) {
-                System.out.println("exception caused by " + e);
+                System.out.println("Request " + keys[i]);
             }
         }
+
         return map;
     }
+
 
     /**
      *              --writeLookCommands()--

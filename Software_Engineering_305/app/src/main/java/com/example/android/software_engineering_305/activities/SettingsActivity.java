@@ -59,6 +59,10 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         setContentView(R.layout.activity_settings);
         mContext = this;
 
+        Map<String, Integer> map = DevDataTransfer.createHashtable();
+
+        Log.e(TAG, "Map: " + map);
+
         // Find the seek bar widgets
         stepSpeedBar = findViewById(R.id.stepSpeedBar);
         rotationBar = findViewById(R.id.rotationBar);
@@ -66,10 +70,19 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         ranRangeBar = findViewById(R.id.ranRangeBar);
         lightBar = findViewById(R.id.lightBar);
 
-        setArrayValues();
+        try{
+            stepSpeedBar.setProgress(map.get(Commands.L_STEPPER_SPEED));
+            rotationBar.setProgress(map.get(Commands.L_ROT_ANGLE));
+            pitchMinBar.setProgress(map.get(Commands.L_PITCH_MIN));
+            ranRangeBar.setProgress(map.get(Commands.L_PITCH_RANGE));
+            lightBar.setProgress(map.get(Commands.L_LIGHT_THRES));
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "Error: " + e);
+        }
 
-        //TODO: This is where you get the map
-        Map<String, String> map = DevDataTransfer.createHashtable();
+        setArrayValues();
 
         // Find the button widgets and give them click functionality
         updateButton = findViewById(R.id.updateBtn);

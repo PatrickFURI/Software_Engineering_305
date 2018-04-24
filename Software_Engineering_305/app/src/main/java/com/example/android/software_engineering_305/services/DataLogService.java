@@ -11,18 +11,20 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Console;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class DataLogService{
-    public DataLogService()
+    public DataLogService(String path)
     {
         try
         {
-            csv = new File("data.csv");
+            csv = new File(path + "/data.csv");
             if (!csv.exists()) {
                 csv.createNewFile();
             }
@@ -71,9 +73,11 @@ public class DataLogService{
                     return sCurrentLine.split(",");
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
-        } finally {
+        } finally
+        {
             try {
                 if (br != null)br.close();
             } catch (IOException ex) {
@@ -83,10 +87,64 @@ public class DataLogService{
         return null;
     }
 
+    public boolean deleteValues(String name)
+    {
+        for (String csvName : getNames())
+        {
+            if (name == csvName)
+            {
+                try
+                {
+                    File tempFile = new File(csv.getAbsolutePath() + ".tmp");
+
+                    BufferedReader br = new BufferedReader(new FileReader(csv));
+                    PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+
+                    String line = null;
+
+                    //Read from the original file and write to the new
+                    //unless content matches data to be removed.
+                    while ((line = br.readLine()) != null) {
+
+                        if (!line.trim().substring(0,line.indexOf(",")).equals(name)) {
+                            pw.println(line);
+                            pw.flush();
+                        }
+                    }
+                    pw.close();
+                    br.close();
+
+                    //Delete the original file
+                    if (!csv.delete()) {
+                        System.out.println("Could not delete file");
+                        return false;
+                    }
+
+                    //Rename the new file to the filename the original file had.
+                    if (!tempFile.renameTo(csv))
+                    {
+                        System.out.println("Could not rename file");
+                        return false;
+                    }
+                    csv = tempFile;
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            break;
+        }
+        return true;
+    }
+
     public boolean writeValues(String[] values)
     {
         try
         {
+            deleteValues(values[0]);
             String content = "";
             for (String val : values)
             {

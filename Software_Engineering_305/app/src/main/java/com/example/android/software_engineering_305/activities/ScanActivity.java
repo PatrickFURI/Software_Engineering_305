@@ -157,9 +157,10 @@ public class ScanActivity extends AppCompatActivity
             for(BluetoothDevice device : pairedDevices) {
                 HashMap<String,String> btDevice = new HashMap<>(); //need to use a hashmap for the multiline display
                 Log.i(TAG, "Paired device found: " + device.getAddress());
-                btDevice.put("name",device.getName());
-                btDevice.put("address",device.getAddress());
-                myList.add(btDevice);
+                if(device.getName().substring(0,3).equals("LS-")) {
+                    btDevice.put("name", device.getName());
+                    btDevice.put("address", device.getAddress());
+                    myList.add(btDevice);
             }
         }
     }

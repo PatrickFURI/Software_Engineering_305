@@ -117,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         smSpin.setAdapter(adapterMinSec);
         ssSpin.setAdapter(adapterMinSec);
 
-        DLS = new DataLogService();
+        DLS = new DataLogService(getApplicationContext().getFilesDir().getPath().toString());
     }
 
     private void setArrayValues()

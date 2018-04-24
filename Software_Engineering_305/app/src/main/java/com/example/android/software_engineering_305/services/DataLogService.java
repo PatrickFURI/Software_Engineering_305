@@ -20,11 +20,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class DataLogService{
-    public DataLogService()
+    public DataLogService(String path)
     {
         try
         {
-            csv = new File("data.csv");
+            csv = new File(path + "/data.csv");
             if (!csv.exists()) {
                 csv.createNewFile();
             }

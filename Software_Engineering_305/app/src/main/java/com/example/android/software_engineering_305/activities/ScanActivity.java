@@ -161,6 +161,7 @@ public class ScanActivity extends AppCompatActivity
                     btDevice.put("name", device.getName());
                     btDevice.put("address", device.getAddress());
                     myList.add(btDevice);
+                }
             }
         }
     }

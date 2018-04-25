@@ -93,4 +93,14 @@
         <item>58</item>
         <item>59</item>
     </string-array>
+    <string name="cycle_0">Light Wake, Light Sleep</string>
+    <string name="cycle_1">RTC Wake, Light Sleep</string>
+    <string name="cycle_2">Light Wake, RTC Sleep</string>
+    <string name="cycle_3">RTC Wake, RTC Sleep</string>
+    <string-array name="cycle">
+        <item>@string/cycle_0</item>
+        <item>@string/cycle_1</item>
+        <item>@string/cycle_2</item>
+        <item>@string/cycle_3</item>
+    </string-array>
 </resources>

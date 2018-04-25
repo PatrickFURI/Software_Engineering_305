@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 public class DevDataTransfer implements CommandInterface
 {
     private static final String TAG = "DevDataTransfer";
-    // Andrew: You'll be sending these two strings after you collect all the data
     private static String  values = "",
                             codes = "";
 
@@ -54,19 +53,21 @@ public class DevDataTransfer implements CommandInterface
         Log.e(TAG, "Values: " + values);
     }
 
-    /**
+    /**             createHashTable()
      *
      * @return: Returns the map to the SettingsActivity
      */
-    // TODO (Jack): Value will be set to "error(6)" if it was not received. Check for that here (or somewhere else!)
     public static Map<String, Integer> createHashtable() {
         Map<String, Integer> map = new HashMap();
         String[] keys = codes.split(" ");
         String[] vals = values.split(" ");
         for (int i = 0 ; i < keys.length ; i++) {
             try {
-                if(vals[i].equals("error(6)"))
-                    vals[i] = "1";
+                if(vals[i].equals("error(6)") || vals[i] == null)
+                {
+                    Log.e(TAG, vals[i] + "is error(6) or null. Changing to 0.");
+                    vals[i] = "0";
+                }
 
                 map.put(keys[i], Integer.parseInt(vals[i]));
 
@@ -78,7 +79,6 @@ public class DevDataTransfer implements CommandInterface
 
         return map;
     }
-
 
     /**
      *              --writeLookCommands()--
@@ -135,6 +135,12 @@ public class DevDataTransfer implements CommandInterface
         }
     }
 
+    /**
+     *              --writeLookCommands()--
+     *      Writes the set commands to the Arduino
+     * @param mContext
+     * @param values: Values obtained from SettingsActivity widgets
+     */
     public static void writeSetCommands(Context mContext, int[] values)
     {
         for(int i = 0; i < 6; i++) // 6 for now, change to Commands.NUM_COMMANDS later
@@ -185,6 +191,12 @@ public class DevDataTransfer implements CommandInterface
         }
     }
 
+    /**                     clearValues()
+     * Clears the static variables after the writeSetCommands() method is called
+     * in the Settings Activity
+     * This is to avoid the values from being appended to on successive connections
+     *
+     */
     public static void clearValues()
     {
         codes = "";

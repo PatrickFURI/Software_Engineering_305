@@ -43,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private Context mContext;
     private Button  updateButton, saveButton, reloadButton;
     private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
+    private Spinner cySpin;
     private DataLogService DLS;
 
 
@@ -61,8 +62,6 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
 
         Map<String, Integer> map = DevDataTransfer.createHashtable();
 
-        Log.e(TAG, "Map: " + map);
-
         // Find the seek bar widgets
         stepSpeedBar = findViewById(R.id.stepSpeedBar);
         rotationBar = findViewById(R.id.rotationBar);
@@ -70,6 +69,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         ranRangeBar = findViewById(R.id.ranRangeBar);
         lightBar = findViewById(R.id.lightBar);
 
+        // Set values from map to seek bar widgets
         try{
             stepSpeedBar.setProgress(map.get(Commands.L_STEPPER_SPEED));
             rotationBar.setProgress(map.get(Commands.L_ROT_ANGLE));
@@ -82,14 +82,11 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
             Log.e(TAG, "Error: " + e);
         }
 
-        setArrayValues();
-
         // Find the button widgets and give them click functionality
         updateButton = findViewById(R.id.updateBtn);
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // BluetoothService.write(mContext, Commands.DEBUG_AVAILABLE);
                 updateSettings();
             }
         });
@@ -108,20 +105,26 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
             }
         });
 
+        // Find Spinner widgets
         Spinner whSpin = (Spinner) findViewById(R.id.wakeHour);
         Spinner wmSpin = (Spinner) findViewById(R.id.wakeMinute);
         Spinner wsSpin = (Spinner) findViewById(R.id.wakeSecond);
         Spinner shSpin = (Spinner) findViewById(R.id.sleepHour);
         Spinner smSpin = (Spinner) findViewById(R.id.sleepMinute);
         Spinner ssSpin = (Spinner) findViewById(R.id.sleepSecond);
+        cySpin = findViewById(R.id.cycle_mode);
 
+        // Set string-array adapter to spinners
         ArrayAdapter<CharSequence> adapterHours = ArrayAdapter.createFromResource(this,
                 R.array.hours, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> adapterMinSec = ArrayAdapter.createFromResource(this,
                 R.array.minutesSeconds, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterCycleMode = ArrayAdapter.createFromResource(this,
+                R.array.cycle, android.R.layout.simple_spinner_item);
 
         adapterHours.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterMinSec.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterCycleMode.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         whSpin.setAdapter(adapterHours);
         wmSpin.setAdapter(adapterMinSec);
@@ -129,10 +132,23 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         shSpin.setAdapter(adapterHours);
         smSpin.setAdapter(adapterMinSec);
         ssSpin.setAdapter(adapterMinSec);
+        cySpin.setAdapter(adapterCycleMode);
 
+        // Set spinner values to correspond with read command value
+        cySpin.setSelection(map.get(Commands.L_CYCLE_MODE));
+
+        Log.e(TAG, "Cycle Mode: " + cySpin.getSelectedItemPosition());
+
+        setArrayValues();
         DLS = new DataLogService(getApplicationContext().getFilesDir().getPath().toString());
     }
 
+    /**                 setArrayValues()
+     *  The newValues array will be the values that are used to
+     *  write the send commands to the Arduino. This is where they
+     *  are set.
+     *  Called in onCreate() and on updateSettings()
+     */
     private void setArrayValues()
     {
         newValues = new int[Commands.NUM_COMMANDS];
@@ -140,18 +156,28 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         newValues[1] = pitchMinBar.getProgress();
         newValues[2] = ranRangeBar.getProgress();
         newValues[3] = rotationBar.getProgress();
-        newValues[4] = 1; //Cycle Mode
+        newValues[4] = cySpin.getSelectedItemPosition();
         newValues[5] = lightBar.getProgress();
     }
 
+    /**                 updateSettings()
+     *  Updates the settings on the Arduino by taking the values from the
+     *  newValues array and sending them to writeSetCommands(), where they
+     *  are added to the set command string and sent to the Arduino.
+     *
+     */
     private void updateSettings()
     {
-        //TODO: Get values from the SeekBar and add them to set command
         Log.i(TAG, "Logging new settings...");
         setArrayValues();
 
         if(newValues != null)
+        {
             DevDataTransfer.writeSetCommands(mContext, newValues);
+            DevDataTransfer.clearValues();
+        }
+
+        Toast.makeText(mContext, "Scarecrow Updated", Toast.LENGTH_SHORT).show();
     }
 
     /**                     --restoreDefaults()--
@@ -184,7 +210,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
 //        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
         String[] values = new String[newValues.length];
         values[0] = configName;
-        if(newValues != null && newValues.length > 0) // TODO: Check if null
+        if(newValues != null && newValues.length > 0)
         {
             for(int i = 0; i < newValues.length; i++)
             {

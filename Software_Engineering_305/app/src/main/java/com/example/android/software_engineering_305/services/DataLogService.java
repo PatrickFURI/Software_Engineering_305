@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,11 +21,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class DataLogService{
-    public DataLogService(String path)
+    public DataLogService(Context context)
     {
         try
         {
-            csv = new File(path + "/data.csv");
+            csv = new File(Directories.getRootFile(context), "/data.csv");
             if (!csv.exists()) {
                 csv.createNewFile();
             }
@@ -68,7 +69,7 @@ public class DataLogService{
             String sCurrentLine;
             br = new BufferedReader(new FileReader(csv.getAbsoluteFile()));
             while ((sCurrentLine = br.readLine()) != null) {
-                if (sCurrentLine.substring(0,sCurrentLine.indexOf(",")) == name)
+                if (sCurrentLine.substring(0,sCurrentLine.indexOf(",")).equals(name))
                 {
                     return sCurrentLine.split(",");
                 }
@@ -150,12 +151,18 @@ public class DataLogService{
             {
                 content = content + val + ",";
             }
-            content = content.substring(0,content.length()-2);
+            content = content.substring(0,content.length() - 1);
 
-            FileWriter fw = new FileWriter(csv.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(csv, true);
+            fileOutputStream.write(content.getBytes());
+            fileOutputStream.write("\n".getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.close();
+//
+//            FileWriter fw = new FileWriter(csv.getAbsoluteFile());
+//            BufferedWriter bw = new BufferedWriter(fw);
+//            bw.write(content);
+//            bw.close();
             return true;
         }
         catch (Exception e)

@@ -6,7 +6,6 @@ package com.example.android.software_engineering_305.application;
 
 public interface CommandInterface
 {
-    //TODO: COMMAND: Finish the command interface
     interface Commands
     {
         int NUM_COMMANDS = 10;
@@ -33,13 +32,5 @@ public interface CommandInterface
         String S_WAKE_TIME = "S261 ";
         String S_SLEEP_TIME = "S262 ";
 
-    }
-
-    // Join the two together with Comands.___ + Options.____
-
-    //TODO: COMMAND: Finish the option interface
-    interface Options
-    {
-        String ONE = "1";
     }
 }

@@ -11,6 +11,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,9 +42,12 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private static final String FILE_NAME = "/laser.csv";
     private int[] newValues;
     private Context mContext;
-    private Button  updateButton, saveButton, reloadButton;
+    private Button  updateButton, saveButton, reloadButton, deleteButton;
     private SeekBar stepSpeedBar, rotationBar, pitchMinBar, ranRangeBar, lightBar;
+    private Spinner cySpin, deleteSpin, loadSpinner;
     private DataLogService DLS;
+    private Map<String, Integer> map;
+    private String toDelete;
 
 
     /**         --onCreate(...)--
@@ -59,6 +63,8 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         setContentView(R.layout.activity_settings);
         mContext = this;
 
+        map = DevDataTransfer.createHashtable();
+
         // Find the seek bar widgets
         stepSpeedBar = findViewById(R.id.stepSpeedBar);
         rotationBar = findViewById(R.id.rotationBar);
@@ -66,17 +72,11 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         ranRangeBar = findViewById(R.id.ranRangeBar);
         lightBar = findViewById(R.id.lightBar);
 
-        setArrayValues();
-
-        //TODO: This is where you get the map
-        Map<String, String> map = DevDataTransfer.createHashtable();
-
         // Find the button widgets and give them click functionality
         updateButton = findViewById(R.id.updateBtn);
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // BluetoothService.write(mContext, Commands.DEBUG_AVAILABLE);
                 updateSettings();
             }
         });
@@ -91,35 +91,136 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         reloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                restoreDefaults();
+                setWidgets();
             }
         });
 
+        // Button to delete a configuration from file
+        deleteButton = findViewById(R.id.delBtn);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                //Yes button clicked
+                                if(toDelete != null) {
+                                    Log.i(TAG, " item string");
+                                    Log.i(TAG, toDelete);
+                                    DLS.deleteValues(toDelete);
+                                    loadAndDelete();
+                                }
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+                // Alert user to ensure a delete is the proper action
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+            }
+        });
+
+        // Find Spinner widgets
         Spinner whSpin = (Spinner) findViewById(R.id.wakeHour);
         Spinner wmSpin = (Spinner) findViewById(R.id.wakeMinute);
         Spinner wsSpin = (Spinner) findViewById(R.id.wakeSecond);
         Spinner shSpin = (Spinner) findViewById(R.id.sleepHour);
         Spinner smSpin = (Spinner) findViewById(R.id.sleepMinute);
         Spinner ssSpin = (Spinner) findViewById(R.id.sleepSecond);
+        cySpin = findViewById(R.id.cycle_mode);
+        loadSpinner = findViewById(R.id.load_config);
+        deleteSpin = findViewById(R.id.delete_config);
 
+        // Set string-array adapter to spinners
         ArrayAdapter<CharSequence> adapterHours = ArrayAdapter.createFromResource(this,
                 R.array.hours, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> adapterMinSec = ArrayAdapter.createFromResource(this,
                 R.array.minutesSeconds, android.R.layout.simple_spinner_item);
+        final ArrayAdapter<CharSequence> adapterCycleMode = ArrayAdapter.createFromResource(this,
+                R.array.cycle, android.R.layout.simple_spinner_item);
 
+        // Instance of DataLogService Class
+        DLS = new DataLogService(mContext);
+
+        // Populates drop down menus for load and delete
+        loadAndDelete();
+
+        // Set spinners with values for drop down items
         adapterHours.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapterMinSec.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterCycleMode.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        // Set spinners
         whSpin.setAdapter(adapterHours);
         wmSpin.setAdapter(adapterMinSec);
         wsSpin.setAdapter(adapterMinSec);
         shSpin.setAdapter(adapterHours);
         smSpin.setAdapter(adapterMinSec);
         ssSpin.setAdapter(adapterMinSec);
+        cySpin.setAdapter(adapterCycleMode);
 
-        DLS = new DataLogService(getApplicationContext().getFilesDir().getPath().toString());
+        loadSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String itemString = loadSpinner.getSelectedItem().toString();
+                String values[] = DLS.getValues(itemString);
+                int[] newValues = new int[Commands.NUM_COMMANDS];
+                //TODO:
+                // Set each
+                for(int j = 1; j < Commands.NUM_COMMANDS; j++)
+                {
+                    newValues[j] = Integer.parseInt(values[j+1]);
+                }
+                stepSpeedBar.setProgress(newValues[0]);
+                pitchMinBar.setProgress(newValues[1]);
+                ranRangeBar.setProgress(newValues[2]);
+                cySpin.setSelection(newValues[4]);
+                lightBar.setProgress(newValues[5]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        // Delete a configuration from the file
+        deleteSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                toDelete = deleteSpin.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        setWidgets();
+
+        Log.e(TAG, "Cycle Mode: " + cySpin.getSelectedItemPosition());
+
+        setArrayValues();
     }
 
+    /**                 setArrayValues()
+     *  The newValues array will be the values that are used to
+     *  write the send commands to the Arduino. This is where they
+     *  are set.
+     *  Called in onCreate() and on updateSettings()
+     */
     private void setArrayValues()
     {
         newValues = new int[Commands.NUM_COMMANDS];
@@ -127,35 +228,28 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
         newValues[1] = pitchMinBar.getProgress();
         newValues[2] = ranRangeBar.getProgress();
         newValues[3] = rotationBar.getProgress();
-        newValues[4] = 1; //Cycle Mode
+        newValues[4] = cySpin.getSelectedItemPosition();
         newValues[5] = lightBar.getProgress();
     }
 
+    /**                 updateSettings()
+     *  Updates the settings on the Arduino by taking the values from the
+     *  newValues array and sending them to writeSetCommands(), where they
+     *  are added to the set command string and sent to the Arduino.
+     *
+     */
     private void updateSettings()
     {
-        //TODO: Get values from the SeekBar and add them to set command
         Log.i(TAG, "Logging new settings...");
         setArrayValues();
 
         if(newValues != null)
+        {
             DevDataTransfer.writeSetCommands(mContext, newValues);
-    }
+            DevDataTransfer.clearValues();
+        }
 
-    /**                     --restoreDefaults()--
-     * This can set each parameter of the device's settings to the default settings we've
-     * come up with. Called by settings option in the actionbar dropdown
-     *
-     */
-    //TODO: COMMAND: Create the restoreDefaults method
-    private void restoreDefaults()
-    {
-        // Read every line
-
-        // Get the names
-
-        // Make something where you can select the name
-
-        // Get the information
+        Toast.makeText(mContext, "Scarecrow Updated", Toast.LENGTH_SHORT).show();
     }
 
     /**                     --saveAsDefault()--
@@ -167,23 +261,57 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     //TODO: COMMAND: Create the saveAsDefault method
     private void saveAsDefault(String configName)
     {
-//        String data = updateButton.getText().toString() + "," + readButton.getText().toString();
-//        DataLogService.log(mContext, Directories.getRootFile(mContext), data, "Send, Read");
-        String[] values = new String[newValues.length];
+
+        String[] values = new String[newValues.length + 1];
         values[0] = configName;
-        if(newValues != null && newValues.length > 0) // TODO: Check if null
+        if(newValues != null && newValues.length > 0)
         {
             for(int i = 0; i < newValues.length; i++)
             {
                 values[i+1] = String.valueOf(newValues[i]);
             }
             DLS.writeValues(values);
+            loadAndDelete();
         }
         else
             Log.e(TAG, "Value array is not instantiated.");
 
     }
 
+    // Populates the drop down menus for load and delete
+    private void loadAndDelete()
+    {
+        String[] names = DLS.getNames();
+        ArrayAdapter<String> adapterLoadConfig = new ArrayAdapter<>(mContext,
+                android.R.layout.simple_spinner_item, names);
+        ArrayAdapter<String> adapterDeleteConfig = new ArrayAdapter<>(mContext,
+                android.R.layout.simple_spinner_item, names);
+
+        adapterLoadConfig.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterDeleteConfig.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        loadSpinner.setAdapter(adapterLoadConfig);
+        deleteSpin.setAdapter(adapterDeleteConfig);
+    }
+
+    private void setWidgets()
+    {
+        // Set values from map to seek bar widgets
+        try{
+            stepSpeedBar.setProgress(map.get(Commands.L_STEPPER_SPEED));
+            rotationBar.setProgress(map.get(Commands.L_ROT_ANGLE));
+            pitchMinBar.setProgress(map.get(Commands.L_PITCH_MIN));
+            ranRangeBar.setProgress(map.get(Commands.L_PITCH_RANGE));
+            lightBar.setProgress(map.get(Commands.L_LIGHT_THRES));
+            // Set spinner values to correspond with read command value
+            cySpin.setSelection(map.get(Commands.L_CYCLE_MODE));
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "Error: " + e);
+        }
+    }
+
+    // Create a text box to enter a configuration name
     private void createSaveBox()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,11 +21,13 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class DataLogService{
-    public DataLogService(String path)
+
+    // Creates a file to save configurations if one has not yet been created
+    public DataLogService(Context context)
     {
         try
         {
-            csv = new File(path + "/data.csv");
+            csv = new File(Directories.getRootFile(context), "/data.csv");
             if (!csv.exists()) {
                 csv.createNewFile();
             }
@@ -37,6 +40,7 @@ public class DataLogService{
 
     private File csv;
 
+    // Gets the names of items in column 1
     public String[] getNames()
     {
         ArrayList<String> names = new ArrayList<String>();
@@ -45,6 +49,7 @@ public class DataLogService{
         try {
             String sCurrentLine;
             br = new BufferedReader(new FileReader(csv.getAbsoluteFile()));
+            //Reads file line by line for these names
             while ((sCurrentLine = br.readLine()) != null) {
                 names.add(sCurrentLine.substring(0,sCurrentLine.indexOf(",")));
             }
@@ -61,15 +66,18 @@ public class DataLogService{
         return names.toArray(new String[names.size()]);
     }
 
+    // For a certain name, retrieve the values located in that row
     public String[] getValues(String name)
     {
         BufferedReader br = null;
         try {
             String sCurrentLine;
             br = new BufferedReader(new FileReader(csv.getAbsoluteFile()));
+            // Checks line by line for name
             while ((sCurrentLine = br.readLine()) != null) {
-                if (sCurrentLine.substring(0,sCurrentLine.indexOf(",")) == name)
+                if (sCurrentLine.substring(0,sCurrentLine.indexOf(",")).equals(name))
                 {
+                    // Returns an array of all the values
                     return sCurrentLine.split(",");
                 }
             }
@@ -87,14 +95,16 @@ public class DataLogService{
         return null;
     }
 
+    // Deletes a full row from the file
     public boolean deleteValues(String name)
     {
         for (String csvName : getNames())
         {
-            if (name == csvName)
+            if (name.equals(csvName))
             {
                 try
                 {
+                    // Creates a temporary file
                     File tempFile = new File(csv.getAbsolutePath() + ".tmp");
 
                     BufferedReader br = new BufferedReader(new FileReader(csv));
@@ -126,7 +136,6 @@ public class DataLogService{
                         System.out.println("Could not rename file");
                         return false;
                     }
-                    csv = tempFile;
                     return true;
                 }
                 catch (Exception e)
@@ -135,11 +144,11 @@ public class DataLogService{
                     return false;
                 }
             }
-            break;
         }
         return true;
     }
 
+    // Write values into the CSV file
     public boolean writeValues(String[] values)
     {
         try
@@ -150,12 +159,14 @@ public class DataLogService{
             {
                 content = content + val + ",";
             }
-            content = content.substring(0,content.length()-2);
+            content = content.substring(0,content.length() - 1);
 
-            FileWriter fw = new FileWriter(csv.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(csv, true);
+            fileOutputStream.write(content.getBytes());
+            fileOutputStream.write("\n".getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.close();
+
             return true;
         }
         catch (Exception e)

@@ -18,9 +18,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Load Configuration From File"/>
+
             <Spinner
+                android:id="@+id/load_config"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -132,11 +134,13 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Current Mode"/>
+
                 <Spinner
+                    android:id="@+id/cycle_mode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal"/>
+                    android:gravity="center_horizontal" />
             </LinearLayout>
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -227,10 +231,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delete Configuration File"/>
+
             <Spinner
+                android:id="@+id/delete_config"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/delBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Delete Configuration from File" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

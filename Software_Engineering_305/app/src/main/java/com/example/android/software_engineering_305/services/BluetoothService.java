@@ -208,7 +208,7 @@ public class BluetoothService extends Service
     {
         try {
             readBufferPosition = 0;
-            readBuffer = new byte[256]; // Might need to change to 1024 if issues
+            readBuffer = new byte[256];
             // Checks to see if a message is in the input stream
             int bytesAvailable = serialInputStream.available();
             if (bytesAvailable > 0) {

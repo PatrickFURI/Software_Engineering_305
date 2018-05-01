@@ -261,7 +261,6 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     //TODO: COMMAND: Create the saveAsDefault method
     private void saveAsDefault(String configName)
     {
-
         String[] values = new String[newValues.length + 1];
         values[0] = configName;
         if(newValues != null && newValues.length > 0)

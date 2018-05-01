@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class DataLogService{
-
     // Creates a file to save configurations if one has not yet been created
     public DataLogService(Context context)
     {
@@ -166,7 +165,6 @@ public class DataLogService{
             fileOutputStream.write("\n".getBytes());
             fileOutputStream.flush();
             fileOutputStream.close();
-
             return true;
         }
         catch (Exception e)

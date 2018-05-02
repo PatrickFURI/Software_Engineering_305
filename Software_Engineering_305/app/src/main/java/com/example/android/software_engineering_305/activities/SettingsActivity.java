@@ -48,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     private DataLogService DLS;
     private Map<String, Integer> map;
     private String toDelete;
+    private boolean setupComplete = false;
 
 
     /**         --onCreate(...)--
@@ -171,20 +172,21 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String itemString = loadSpinner.getSelectedItem().toString();
-                String values[] = DLS.getValues(itemString);
-                int[] newValues = new int[Commands.NUM_COMMANDS];
-                //TODO:
-                // Set each
-                for(int j = 1; j < Commands.NUM_COMMANDS; j++)
+
+                if(setupComplete)
                 {
-                    newValues[j] = Integer.parseInt(values[j+1]);
+                    String itemString = loadSpinner.getSelectedItem().toString();
+                    String values[] = DLS.getValues(itemString);
+                    stepSpeedBar.setProgress(Integer.parseInt(values[1]));
+                    pitchMinBar.setProgress(Integer.parseInt(values[2]));
+                    ranRangeBar.setProgress(Integer.parseInt(values[3]));
+                    rotationBar.setProgress(Integer.parseInt(values[4]));
+                    cySpin.setSelection(Integer.parseInt(values[5]));
+                    lightBar.setProgress(Integer.parseInt(values[6]));
                 }
-                stepSpeedBar.setProgress(newValues[0]);
-                pitchMinBar.setProgress(newValues[1]);
-                ranRangeBar.setProgress(newValues[2]);
-                cySpin.setSelection(newValues[4]);
-                lightBar.setProgress(newValues[5]);
+                else
+                    setupComplete = true;
+
             }
 
             @Override
@@ -207,8 +209,6 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
 
             }
         });
-
-        setWidgets();
 
         Log.e(TAG, "Cycle Mode: " + cySpin.getSelectedItemPosition());
 
@@ -263,6 +263,7 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     {
         String[] values = new String[newValues.length + 1];
         values[0] = configName;
+        setArrayValues();
         if(newValues != null && newValues.length > 0)
         {
             for(int i = 0; i < newValues.length; i++)
@@ -369,6 +370,12 @@ public class SettingsActivity extends AppCompatActivity implements CommandInterf
     {
         BluetoothService.disconnect(mContext);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setWidgets();
     }
 
     /**               --onOptionsItemSelected(...)--
